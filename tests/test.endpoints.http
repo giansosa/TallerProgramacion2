@@ -1,8 +1,8 @@
 ### ============================================
-### Tests de Endpoints - Fase 1: CRUD Básico
+### Tests de Endpoints - Fase 1 y 2
 ### ============================================
-### Nota: Estos tests NO requieren autenticación
-### La autenticación se implementará en la Fase 2
+### Nota: Los tests de Fase 1 NO requieren autenticación
+### Los tests de Fase 2 requieren autenticación
 ### ============================================
 
 @baseUrl = http://localhost:3000/api/v1
@@ -15,7 +15,73 @@
 GET {{baseUrl}}/../health
 
 ### ============================================
-### Productos - CRUD Básico
+### Autenticación - Fase 2
+### ============================================
+
+### POST - Registrar usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### POST - Error: Username ya existe
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### POST - Error: Username muy corto
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "ab",
+  "password": "password123"
+}
+
+### POST - Error: Password muy corto
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "password": "12345"
+}
+
+### POST - Login con credenciales válidas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### POST - Error: Login con credenciales inválidas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "wrongpassword"
+}
+
+### POST - Error: Login sin username
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "password": "password123"
+}
+
+### ============================================
+### Productos - CRUD Básico (Sin Auth)
 ### ============================================
 
 ### POST - Crear producto
@@ -82,17 +148,11 @@ GET {{baseUrl}}/productos/:id
 ### GET - Error: Producto no encontrado
 GET {{baseUrl}}/productos/999999999999999999999999
 
-### PUT - Actualizar producto completo (reemplazar :id con un ID válido)
-PUT {{baseUrl}}/productos/:id
-Content-Type: application/json
+### ============================================
+### Productos - Operaciones Protegidas (Requieren Auth)
+### ============================================
 
-{
-  "producto": "Laptop HP Pavilion Actualizado",
-  "stockAmount": 15,
-  "fechaIngreso": "2024-02-01"
-}
-
-### PUT - Actualizar producto parcial (reemplazar :id con un ID válido)
+### PUT - Error: Actualizar sin autenticación (reemplazar :id con un ID válido)
 PUT {{baseUrl}}/productos/:id
 Content-Type: application/json
 
@@ -100,27 +160,58 @@ Content-Type: application/json
   "stockAmount": 20
 }
 
-### PUT - Error: Producto vacío (reemplazar :id con un ID válido)
+### PUT - Actualizar con x-api-key (reemplazar :id con un ID válido)
 PUT {{baseUrl}}/productos/:id
 Content-Type: application/json
+x-api-key: api-key-secreta-para-pruebas-12345
+
+{
+  "producto": "Laptop HP Pavilion Actualizado",
+  "stockAmount": 15,
+  "fechaIngreso": "2024-02-01"
+}
+
+### PUT - Actualizar con JWT (reemplazar :id con un ID válido y <TOKEN> con el token obtenido)
+PUT {{baseUrl}}/productos/:id
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
+{
+  "stockAmount": 25
+}
+
+### PUT - Error: Producto vacío con auth (reemplazar :id con un ID válido)
+PUT {{baseUrl}}/productos/:id
+Content-Type: application/json
+x-api-key: api-key-secreta-para-pruebas-12345
 
 {
   "producto": ""
 }
 
-### PUT - Error: Stock negativo (reemplazar :id con un ID válido)
+### PUT - Error: Stock negativo con auth (reemplazar :id con un ID válido)
 PUT {{baseUrl}}/productos/:id
 Content-Type: application/json
+x-api-key: api-key-secreta-para-pruebas-12345
 
 {
   "stockAmount": -10
 }
 
-### DELETE - Eliminar producto (reemplazar :id con un ID válido)
+### DELETE - Error: Eliminar sin autenticación (reemplazar :id con un ID válido)
 DELETE {{baseUrl}}/productos/:id
 
-### DELETE - Error: Producto no encontrado
+### DELETE - Eliminar con x-api-key (reemplazar :id con un ID válido)
+DELETE {{baseUrl}}/productos/:id
+x-api-key: api-key-secreta-para-pruebas-12345
+
+### DELETE - Eliminar con JWT (reemplazar :id con un ID válido y <TOKEN> con el token obtenido)
+DELETE {{baseUrl}}/productos/:id
+Authorization: Bearer <TOKEN>
+
+### DELETE - Error: Producto no encontrado con auth
 DELETE {{baseUrl}}/productos/999999999999999999999999
+x-api-key: api-key-secreta-para-pruebas-12345
 
 ### ============================================
 ### Tests de Rutas No Encontradas
@@ -138,20 +229,36 @@ Content-Type: application/json
 }
 
 ### ============================================
-### Notas para la Fase 2 (Autenticación)
+### Instrucciones para Generar Token JWT
 ### ============================================
 ###
-### En la Fase 2 se implementará:
-### 1. Sistema de usuarios con registro y login
-### 2. Middleware de autenticación (x-api-key y JWT)
-### 3. Protección de rutas PUT y DELETE
+### 1. Registrar un nuevo usuario:
+###    POST http://localhost:3000/api/v1/auth/register
+###    Body: { "username": "testuser", "password": "password123" }
 ###
-### Para generar un token JWT de prueba:
-### 1. POST /api/v1/auth/register - Registrar usuario
-### 2. POST /api/v1/auth/login - Iniciar sesión y obtener token
-### 3. Usar el token en header: Authorization: Bearer <token>
+### 2. Iniciar sesión y obtener el token:
+###    POST http://localhost:3000/api/v1/auth/login
+###    Body: { "username": "testuser", "password": "password123" }
 ###
-### Para usar x-api-key:
-### 1. Configurar API_KEY en .env
-### 2. Usar header: x-api-key: <tu-api-key>
+### 3. Copiar el token de la respuesta y reemplazar <TOKEN> en los tests
+###
+### 4. Usar el token en el header:
+###    Authorization: Bearer <TOKEN_OBTENIDO>
+###
+### Nota: El token JWT tiene una expiración de 24 horas por defecto
+###
+### ============================================
+### Instrucciones para Usar x-api-key
+### ============================================
+###
+### 1. La API key está configurada en .env como:
+###    API_KEY=api-key-secreta-para-pruebas-12345
+###
+### 2. Usar el header en las requests:
+###    x-api-key: api-key-secreta-para-pruebas-12345
+###
+### 3. Puedes cambiar AUTH_METHOD en .env a:
+###    - api-key: Solo acepta x-api-key
+###    - jwt: Solo acepta JWT
+###    - both: Acepta ambos métodos
 ###

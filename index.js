@@ -9,9 +9,11 @@ async function startServer() {
   try {
     console.log('Iniciando servidor...');
     console.log(`DB_PROVIDER: ${config.dbProvider}`);
+    console.log(`AUTH_METHOD: ${config.authMethod}`);
 
-    // Inicializar repositorio según el proveedor
+    // Inicializar repositorios según el proveedor
     const productoRepository = RepositoryFactory.createProductoRepository();
+    const usuarioRepository = RepositoryFactory.createUsuarioRepository();
 
     if (config.dbProvider === 'mongo') {
       // Conectar a MongoDB
@@ -19,6 +21,7 @@ async function startServer() {
     } else if (config.dbProvider === 'json') {
       // Inicializar base de datos JSON
       await productoRepository.initialize();
+      await usuarioRepository.initialize();
     }
 
     // Crear aplicación Express

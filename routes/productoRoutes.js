@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middlewares/authMiddleware');
 
 /**
  * Crea las rutas de productos
@@ -7,7 +8,7 @@ const router = express.Router();
  * @returns {Router}
  */
 function createProductoRoutes(productoController) {
-  // POST /api/v1/productos - Crear producto (sin auth por ahora)
+  // POST /api/v1/productos - Crear producto (sin auth)
   router.post('/', (req, res) => productoController.create(req, res));
 
   // GET /api/v1/productos - Listar productos (sin auth)
@@ -16,11 +17,11 @@ function createProductoRoutes(productoController) {
   // GET /api/v1/productos/:id - Obtener producto por ID (sin auth)
   router.get('/:id', (req, res) => productoController.findById(req, res));
 
-  // PUT /api/v1/productos/:id - Editar producto (sin auth por ahora, se protegerá en Fase 2)
-  router.put('/:id', (req, res) => productoController.update(req, res));
+  // PUT /api/v1/productos/:id - Editar producto (REQUIERE autenticación)
+  router.put('/:id', authMiddleware, (req, res) => productoController.update(req, res));
 
-  // DELETE /api/v1/productos/:id - Eliminar producto (sin auth por ahora, se protegerá en Fase 2)
-  router.delete('/:id', (req, res) => productoController.delete(req, res));
+  // DELETE /api/v1/productos/:id - Eliminar producto (REQUIERE autenticación)
+  router.delete('/:id', authMiddleware, (req, res) => productoController.delete(req, res));
 
   return router;
 }
