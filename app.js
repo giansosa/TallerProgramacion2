@@ -4,8 +4,10 @@ const config = require('./config');
 const RepositoryFactory = require('./repository');
 const ProductoController = require('./controllers/productoController');
 const AuthController = require('./controllers/authController');
+const AlbumsController = require('./controllers/albumsController');
 const createProductoRoutes = require('./routes/productoRoutes');
 const createAuthRoutes = require('./routes/authRoutes');
+const createAlbumsRoutes = require('./routes/albumsRoutes');
 
 /**
  * Configura y crea la aplicación Express
@@ -23,10 +25,12 @@ function createApp() {
   const usuarioRepository = RepositoryFactory.createUsuarioRepository();
   const productoController = new ProductoController(productoRepository);
   const authController = new AuthController(usuarioRepository);
+  const albumsController = new AlbumsController();
 
   // Rutas
   app.use('/api/v1/auth', createAuthRoutes(authController));
   app.use('/api/v1/productos', createProductoRoutes(productoController));
+  app.use('/api/v1/albums', createAlbumsRoutes(albumsController));
 
   // Ruta de health check
   app.get('/health', (req, res) => {

@@ -1,8 +1,7 @@
 ### ============================================
-### Tests de Endpoints - Fase 1 y 2
+### Tests de Endpoints
 ### ============================================
-### Nota: Los tests de Fase 1 NO requieren autenticación
-### Los tests de Fase 2 requieren autenticación
+### Nota: Los tests de autenticación requieren autenticación
 ### ============================================
 
 @baseUrl = http://localhost:3000/api/v1
@@ -15,7 +14,7 @@
 GET {{baseUrl}}/../health
 
 ### ============================================
-### Autenticación - Fase 2
+### Autenticación
 ### ============================================
 
 ### POST - Registrar usuario
@@ -229,6 +228,13 @@ Content-Type: application/json
 }
 
 ### ============================================
+### Albums - API Externa y CSV
+### ============================================
+
+### GET - Obtener albums en CSV (consume API externa y genera CSV)
+GET {{baseUrl}}/albums/csv
+
+### ============================================
 ### Instrucciones para Generar Token JWT
 ### ============================================
 ###
@@ -261,4 +267,17 @@ Content-Type: application/json
 ###    - api-key: Solo acepta x-api-key
 ###    - jwt: Solo acepta JWT
 ###    - both: Acepta ambos métodos
+###
+### ============================================
+### Nota sobre el endpoint /api/v1/albums/csv
+### ============================================
+###
+### Este endpoint:
+### 1. Consume la API externa https://jsonplaceholder.typicode.com/albums
+### 2. Toma los primeros 15 registros
+### 3. Los convierte a CSV (columnas: userId, id, title)
+### 4. Guarda el CSV en database/albums_15.csv
+### 5. Devuelve el CSV con Content-Type: text/csv
+###
+### No requiere autenticación por defecto.
 ###

@@ -4,9 +4,6 @@ node_modules/
 # Environment variables
 .env
 
-# Plan de implementación (no subir al repo)
-PLAN_IMPLEMENTACION.md
-
 # Database files (JSON persistence)
 database/database.json
 
