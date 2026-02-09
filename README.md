@@ -45,12 +45,12 @@ cp .env.example .env
 ```env
 # Persistencia
 DB_PROVIDER=mongo  # Opciones: mongo | json
-MONGO_URI=mongodb+srv://gianaxelsosa_db_user:grantorino1@tp2final.xro3cgh.mongodb.net/?appName=TP2Final
+MONGO_URI=mongodb+srv://...
 
 # Autenticación
 AUTH_METHOD=api-key  # Opciones: api-key | jwt | both
-API_KEY=api-key-secreta-para-pruebas-12345
-JWT_SECRET=jwt-secret-secreto-para-pruebas-67890
+API_KEY=tu-api-key-secreta
+JWT_SECRET=tu-jwt-secret
 JWT_EXPIRES_IN=24h
 
 # Servidor
